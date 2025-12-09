@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nişan Davetiyesi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: #b9c8ad;
+  --env: #d4e4c7;
+  --accent: #7b5f57;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  font-family:"Poppins",sans-serif;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  position:relative;
+}
+
+/* flower decorations */
+.flower-decor{
+  position:absolute;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* envelope container */
+.envelope-stage{
+  width:640px;
+  height:440px;
+  perspective:1200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2;
+  transition:transform 0.6s ease;
+}
+.envelope-stage:hover{ transform: translateY(-6px) scale(1.01); }
+
+/* envelope */
+.envelope{
+  width:640px;
+  height:400px;
+  position:relative;
+  transform-style:preserve-3d;
+  cursor:pointer;
+  transition:transform 0.6s cubic-bezier(.2,.9,.3,1);
+}
+
+/* envelope base */
+.envelope-base{
+  position:absolute;
+  inset:0;
+  background:var(--env);
+  border-radius:12px;
+  box-shadow:0 18px 40px rgba(0,0,0,0.18);
+  transform:translateZ(-2px);
+}
+
+/* envelope flap */
+.envelope-flap{
+  position:absolute;
+  width:600px;
+  height:200px;
+  left:50%;
+  top:-20px;
+  transform:translateX(-50%) rotateX(0deg);
+  transform-origin:top center;
+  background:linear-gradient(180deg, var(--env), color-mix(in srgb, var(--env) 88%, black 2%));
+  border-bottom-left-radius:10px;
+  border-bottom-right-radius:10px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+  transition: transform 1s cubic-bezier(.2,.9,.3,1);
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  z-index:3;
+}
+
+/* letter (PNG) */
+.letter{
+  width:600px;
+  height:360px;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) translateY(40px);
+  border-radius:12px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.25);
+  opacity:0;
+  transition: transform 0.9s cubic-bezier(.2,.9,.3,1), opacity 0.6s ease;
+  z-index:1;
+  background: url('ORNEK.png') no-repeat center/cover; /* PNG buraya gelecek */
+}
+
+/* open state */
+.envelope.open .envelope-flap{
+  transform:translateX(-50%) rotateX(-180deg);
+  box-shadow:0 6px 14px rgba(0,0,0,0.08);
+}
+.envelope.open .letter{
+  opacity:1;
+  transform:translate(-50%, -50%) translateY(-30px);
+  z-index:4;
+}
+.envelope.open ~ .envelope-stage,
+.envelope.open .envelope-stage{
+  transform: scale(0.98);
+}
+
+/* responsive */
+@media (max-width:700px){
+  .envelope-stage{ width:90%; height:auto; }
+  .envelope{ width:100%; height:auto; }
+  .envelope-flap{ width:95%; height:150px; }
+  .letter{ width:95%; height:auto; padding-top:56.25%; background-size:cover; }
+}
+
+.envelope:focus{ outline:3px solid rgba(255,255,255,0.25); outline-offset:6px; border-radius:12px }
+
+</style>
+</head>
+<body>
+
+<!-- flower decorations -->
+<svg class="flower-decor" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <circle cx="300" cy="100" r="120" fill="#ffffff08"/>
+  <circle cx="900" cy="720" r="160" fill="#ffffff06"/>
+</svg>
+
+<!-- envelope and letter -->
+<div class="envelope-stage">
+  <div class="envelope" role="button" tabindex="0" aria-pressed="false" aria-label="Davetiye zarfı">
+    <div class="envelope-flap"></div>
+    <div class="envelope-base"></div>
+    <div class="letter" role="document" aria-hidden="true"></div>
+  </div>
+</div>
+
+<script>
+const envelope = document.querySelector('.envelope');
+const letter = document.querySelector('.letter');
+
+function setOpen(open){
+  if(open){
+    envelope.classList.add('open');
+    envelope.setAttribute('aria-pressed','true');
+    letter.setAttribute('aria-hidden','false');
+  } else {
+    envelope.classList.remove('open');
+    envelope.setAttribute('aria-pressed','false');
+    letter.setAttribute('aria-hidden','true');
+  }
+}
+
+/* flap attention animation */
+window.addEventListener('load', () => {
+  setTimeout(()=> {
+    envelope.animate([
+      { transform: 'translateY(0) rotateX(0deg)' },
+      { transform: 'translateY(-6px) rotateX(-6deg)' },
+      { transform: 'translateY(0) rotateX(0deg)' }
+    ], { duration: 1200, iterations: 1, easing: 'ease-in-out' });
+  }, 300);
+});
+
+/* toggle open */
+envelope.addEventListener('click', ()=> setOpen(!envelope.classList.contains('open')));
+envelope.addEventListener('keydown', (e)=>{
+  if(e.key==='Enter'||e.key===' '){
+    e.preventDefault();
+    setOpen(!envelope.classList.contains('open'));
+  }
+});
+</script>
+
+</body>
+</html>
